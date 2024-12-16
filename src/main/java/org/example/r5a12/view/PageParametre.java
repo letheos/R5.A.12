@@ -53,7 +53,7 @@ public class PageParametre extends Application {
 
 
         VBox typeDroite = new VBox();
-        RadioButton genererPoint = new RadioButton("Generer points aléatoires");
+        RadioButton genererPoint = new RadioButton("Générer points aléatoires");
         TextField nbrPoint = new TextField();
         nbrPoint.setPromptText("Par défault 5 points");
         typeDroite.getChildren().addAll(genererPoint, nbrPoint);
@@ -61,12 +61,14 @@ public class PageParametre extends Application {
         hBoxType.getChildren().addAll(typeGauche, typeDroite);
         vBoxPrincipale.getChildren().add(hBoxType);
         hBoxType.setAlignment(Pos.CENTER);
+        hBoxType.setSpacing(3);
 
-        Button generer = new Button("Generer");
+        Button generer = new Button("Générer");
         vBoxPrincipale.getChildren().add(generer);
 
         vBoxPrincipale.setAlignment(Pos.TOP_CENTER);
         vBoxPrincipale.setSpacing(10);
+
         Scene scene = new Scene(vBoxPrincipale, 500, 400);
         stage.setTitle("Radio Button Example");
         stage.setScene(scene);
