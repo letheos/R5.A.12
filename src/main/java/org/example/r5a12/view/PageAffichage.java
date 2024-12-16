@@ -8,8 +8,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class PageAffichage extends Application {
+import java.util.List;
 
+public class PageAffichage extends Application {
+    private List<String> interpolations;
+    public PageAffichage(List<String> interpolation) {//list<Point> points
+        this.interpolations = interpolation;
+    }
 
     @Override
     public void start(Stage stage) throws Exception {
