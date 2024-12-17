@@ -2,14 +2,19 @@ package org.example.r5a12.view;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class PageAffichage extends Application {
+import java.util.ArrayList;
 
+public class PageAffichage extends Application {
+    ArrayList<Float> listePoints = new ArrayList<Float>(); //Remplacer le float par un Point à terme
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -17,9 +22,21 @@ public class PageAffichage extends Application {
         Text titrePage = new Text("Graphe Crée");
         vboxPrincipale.getChildren().add(titrePage);
 
-
         //graph wip
         //ajoute le graphe ici
+
+        final NumberAxis xAxis = new NumberAxis(0, 10, 1);
+        final NumberAxis yAxis = new NumberAxis(0, 10, 1);
+        final ScatterChart<Number,Number> sc = new ScatterChart<Number,Number>(xAxis,yAxis);
+
+        //https://docs.oracle.com/javafx/2/charts/scatter-chart.htm#CIHDEACI exemple 6-2 pour comment afficher ou non certains graphes
+        XYChart.Series series1 = new XYChart.Series();
+        for(int i = 0 ; i < listePoints.size() ; i++){
+            //series1.getData().add(new XYChart.Data(listePoints.get(i)[0], listePoints.get(i)[1]));
+        }
+
+        sc.getData().add(series1);
+        vboxPrincipale.getChildren().add(sc);
 
         HBox hBoxButton = new HBox();
         Button sauv = new Button("Sauvegarder");
