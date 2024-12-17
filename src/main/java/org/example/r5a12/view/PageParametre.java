@@ -72,6 +72,7 @@ public class PageParametre extends Application {
         Scene scene = new Scene(vBoxPrincipale, 500, 400);
         stage.setTitle("Radio Button Example");
         stage.setScene(scene);
+
         stage.show();
     }
 
