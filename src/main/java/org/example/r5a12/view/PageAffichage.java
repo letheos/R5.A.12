@@ -22,6 +22,7 @@ public class PageAffichage extends Application {
         Text titrePage = new Text("Graphe Crée");
         vboxPrincipale.getChildren().add(titrePage);
 
+
         //graph wip
         //ajoute le graphe ici
 
