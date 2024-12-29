@@ -9,17 +9,21 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.example.r5a12.controller.FileChooserJson;
 import org.example.r5a12.model.Generator;
 import org.example.r5a12.model.Point;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.example.r5a12.model.Generator.generatePoints;
 
-public class PageParametre extends Application {
-    @Override
-    public void start(Stage stage) throws Exception {
+public class PageParametre {
+    private final Scene scene;
+    private Scene nextScene;
+
+    public PageParametre(Stage stage) {
         VBox vBoxPrincipale = new VBox();
         Text titrePage = new Text(10,50,"Paramètre de création");
         titrePage.setFont(new Font(15));
@@ -46,7 +50,7 @@ public class PageParametre extends Application {
         HBox hBoxType = new HBox();
 
         VBox typeGauche = new VBox();
-        RadioButton fichierSource = new RadioButton("Fichier source+\t format supporté: JSON");
+        RadioButton fichierSource = new RadioButton(" Fichier source\n format supporté: JSON");
         fichierSource.setToggleGroup(toggleGroup);
         Button importFichier = new Button("Importer fichier");
         typeGauche.getChildren().addAll(fichierSource,importFichier);
@@ -77,43 +81,54 @@ public class PageParametre extends Application {
         hBoxType.setAlignment(Pos.CENTER);
         hBoxType.setSpacing(3);
 
+        importFichier.setOnAction(e ->{
+            FileChooserJson fileChooserJson = new FileChooserJson();
+
+            // Open the file chooser dialog
+            File selectedFile = fileChooserJson.getFileChooser().showOpenDialog(this.getScene().getWindow());
+
+        });
+
         Button generer = new Button("Générer");
-        generer.setOnAction(e->{
+        generer.setOnAction(e -> {
             List<Point> point = new ArrayList<>();
-            if(fichierSource.isSelected()){
+            if (fichierSource.isSelected()) {
                 //bla
-            } else{
+            } else {
                 int nomPoint = 5;
                 int vMin = -10;
                 int vMax = 10;
-                if(!nbrPoint.getCharacters().isEmpty()){ //un truc dans le edti text
+                if (!nbrPoint.getCharacters().isEmpty()) { //un truc dans le edti text
                     nomPoint = Integer.parseInt(nbrPoint.getCharacters().toString());
                 }
 
-                if(!minValeur.getCharacters().isEmpty()){
+                if (!minValeur.getCharacters().isEmpty()) {
                     vMin = Integer.parseInt(nbrPoint.getCharacters().toString());
                 }
 
-                if(!maxValeur.getCharacters().isEmpty()){
+                if (!maxValeur.getCharacters().isEmpty()) {
                     vMax = Integer.parseInt(nbrPoint.getCharacters().toString());
                 }
 
-                point = generatePoints(vMin,vMax,nomPoint);
+                point = generatePoints(vMin, vMax, nomPoint);
+            }
+            if (nextScene != null) {
+                stage.setScene(nextScene);
             }
         });
         vBoxPrincipale.getChildren().add(generer);
 
-        vBoxPrincipale.setAlignment(Pos.TOP_CENTER);
         vBoxPrincipale.setSpacing(10);
-
-        Scene scene = new Scene(vBoxPrincipale, 600, 400);
-        stage.setTitle("Radio Button Example");
-        stage.setScene(scene);
-
-        stage.show();
+        scene = new Scene(vBoxPrincipale, 600, 400);
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    public Scene getScene() {
+        return scene;
     }
+
+    public void setNextScene(Scene nextScene) {
+        this.nextScene = nextScene;
+    }
+
+
 }
