@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Point {
-    private float x;
-    private float y;
+    public float x;
+    public float y;
     public Point(float x, float y) {
         this.x = x;
         this.y = y;
@@ -25,5 +25,8 @@ public class Point {
         this.y = y;
     }
 
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
 
 }
