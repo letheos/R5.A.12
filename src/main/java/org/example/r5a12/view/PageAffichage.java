@@ -16,71 +16,51 @@ import org.example.r5a12.model.Point;
 
 import java.util.ArrayList;
 
-public class PageAffichage extends Application {
 
-    @Override
-    public void start(Stage stage) throws Exception {
-        // Mise en place de la VBox principale et du titre
-        VBox vboxPrincipale = new VBox();
-        Text titrePage = new Text("Graphe Crée");
+public class PageAffichage {
+    private final Scene scene;
+    private Scene previousScene;
 
-        // Création des boutons
-        HBox hBoxButton = new HBox();
-        Button sauv = new Button("Sauvegarder");
-        Button nouvGraphe = new Button("Créer un nouveau graphe");
-        hBoxButton.getChildren().addAll(sauv, nouvGraphe);
-        vboxPrincipale.getChildren().addAll(titrePage, hBoxButton);
+    public PageAffichage(Stage stage) {
+        VBox vboxPrincipale = new VBox(10);
 
-        // Création des axes
-        final NumberAxis xAxis = new NumberAxis();
-        final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("X");
-        yAxis.setLabel("Y");
+        Text titrePage = new Text("Graphe Créé");
+        vboxPrincipale.getChildren().add(titrePage);
 
-        // Création du ScatterChart
-        final ScatterChart<Number, Number> sc = new ScatterChart<>(xAxis, yAxis);
-        sc.setTitle("Graphique des points");
 
-        // Créer les points de votre graphique (exemples de points)
-        ArrayList<Point> points = Generator.generatePoints(1, 5, 10);
+        final NumberAxis xAxis = new NumberAxis(0, 10, 1);
+        final NumberAxis yAxis = new NumberAxis(0, 10, 1);
+        final ScatterChart<Number, Number> scatterChart = new ScatterChart<>(xAxis, yAxis);
 
-        // Ajouter les points originaux à la série de données
-        XYChart.Series<Number, Number> seriesOriginal = new XYChart.Series<>();
-        seriesOriginal.setName("Points Originaux");
+        XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
+        ArrayList<Point> listePoints = new ArrayList<>();
 
-        for (Point p : points) {
-            System.out.println("position point original : "+p.getX()+" "+p.getY());
-            seriesOriginal.getData().add(new XYChart.Data<>(p.getX(), p.getY()));
+        for (Point point : listePoints) {
+            series1.getData().add(new XYChart.Data<>(point.getX(), point.getY()));
         }
+        scatterChart.getData().add(series1);
+        vboxPrincipale.getChildren().add(scatterChart);
 
-        // Ajouter la série des points originaux au graphique
-        sc.getData().add(seriesOriginal);
+        HBox hBoxButton = new HBox(10);
+        Button saveButton = new Button("Sauvegarder");
+        Button newGraphButton = new Button("Créer un nouveau graphe");
+        newGraphButton.setOnAction(e -> {
+            if (previousScene != null) {
+                stage.setScene(previousScene);
+            }
+        });
+        hBoxButton.getChildren().addAll(saveButton, newGraphButton);
+        vboxPrincipale.getChildren().add(hBoxButton);
 
-        // Calculer l'interpolation de Lagrange et ajouter la courbe
-        ArrayList<Point> resultats = Lagrange.getInterpolation(points, 0.1f); // Interpolation avec un pas de 0.1
-
-        XYChart.Series<Number, Number> seriesLagrange = new XYChart.Series<>();
-        seriesLagrange.setName("Courbe Interpolée");
-
-        // Ajouter chaque point interpolé à la série
-        for (Point p : resultats) {
-            seriesLagrange.getData().add(new XYChart.Data<>(p.getX(), p.getY()));
-        }
-
-        // Ajouter la série de la courbe au graphique
-        sc.getData().add(seriesLagrange);
-
-        // Ajouter le graphique à la VBox
-        vboxPrincipale.getChildren().add(sc);
-
-        // Afficher la scène
-        Scene scene = new Scene(vboxPrincipale, 600, 400);
-        stage.setScene(scene);
-        stage.setTitle("Affichage du Graphe");
-        stage.show();
+        scene = new Scene(vboxPrincipale, 500, 400);
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    public Scene getScene() {
+        return scene;
     }
+
+    public void setPreviousScene(Scene previousScene) {
+        this.previousScene = previousScene;
+    }
+
 }
