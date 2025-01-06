@@ -2,12 +2,10 @@ package org.example.r5a12.view;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -16,60 +14,53 @@ import org.example.r5a12.model.Generator;
 import org.example.r5a12.controller.Lagrange;
 import org.example.r5a12.model.Point;
 
-import javax.imageio.ImageIO;
-import java.io.File;
 import java.util.ArrayList;
 
 
-public class PageAffichage extends Application {
-    ArrayList<Float> listePoints = new ArrayList<Float>(); //Remplacer le float par un Point à terme
+public class PageAffichage {
+    private final Scene scene;
+    private Scene previousScene;
 
-    @Override
-    public void start(Stage stage) throws Exception {
-        VBox vboxPrincipale = new VBox(); //vertical box
-        Text titrePage = new Text("Graphe Crée");
+    public PageAffichage(Stage stage) {
+        VBox vboxPrincipale = new VBox(10);
+
+        Text titrePage = new Text("Graphe Créé");
         vboxPrincipale.getChildren().add(titrePage);
 
 
-        //graph wip
-        //ajoute le graphe ici
-
         final NumberAxis xAxis = new NumberAxis(0, 10, 1);
         final NumberAxis yAxis = new NumberAxis(0, 10, 1);
-        final ScatterChart<Number,Number> sc = new ScatterChart<Number,Number>(xAxis,yAxis);
+        final ScatterChart<Number, Number> scatterChart = new ScatterChart<>(xAxis, yAxis);
 
-        //https://docs.oracle.com/javafx/2/charts/scatter-chart.htm#CIHDEACI exemple 6-2 pour comment afficher ou non certains graphes
-        XYChart.Series series1 = new XYChart.Series();
-        for(int i = 0 ; i < listePoints.size() ; i++){
-            //series1.getData().add(new XYChart.Data(listePoints.get(i)[0], listePoints.get(i)[1]));
+        XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
+        ArrayList<Point> listePoints = new ArrayList<>();
+
+        for (Point point : listePoints) {
+            series1.getData().add(new XYChart.Data<>(point.getX(), point.getY()));
         }
+        scatterChart.getData().add(series1);
+        vboxPrincipale.getChildren().add(scatterChart);
 
-        sc.getData().add(series1);
-        vboxPrincipale.getChildren().add(sc);
-
-        HBox hBoxButton = new HBox();
-        Button sauv = new Button("Sauvegarder");
-        Button nouvGraphe = new Button("Créer un nouveau graphe");
-        hBoxButton.getChildren().addAll(sauv, nouvGraphe);
-        hBoxButton.setSpacing(10);
-
+        HBox hBoxButton = new HBox(10);
+        Button saveButton = new Button("Sauvegarder");
+        Button newGraphButton = new Button("Créer un nouveau graphe");
+        newGraphButton.setOnAction(e -> {
+            if (previousScene != null) {
+                stage.setScene(previousScene);
+            }
+        });
+        hBoxButton.getChildren().addAll(saveButton, newGraphButton);
         vboxPrincipale.getChildren().add(hBoxButton);
-        vboxPrincipale.setSpacing(10);
-        Scene scene = new Scene(vboxPrincipale, 500, 400);
-        stage.setTitle("Graph"); //voir pour modifier le nom de la page avec des paramètres
 
-        sc.applyCss();
-        WritableImage wi = sc.snapshot(new SnapshotParameters(), new WritableImage(800, 600));
-        File file = new File("CanvasImage.png");
-        try {
-            ImageIO.write(SwingFXUtils.fromFXImage(wi, null), "png", file);
-        } catch (Exception s) {
-        }
+        scene = new Scene(vboxPrincipale, 500, 400);
+    }
 
-        stage.setScene(scene);
-        stage.show();
+    public Scene getScene() {
+        return scene;
     }
-    public static void main(String[] args) {
-        launch(args);
+
+    public void setPreviousScene(Scene previousScene) {
+        this.previousScene = previousScene;
     }
+
 }
