@@ -2,10 +2,12 @@ package org.example.r5a12.view;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -14,6 +16,8 @@ import org.example.r5a12.model.Generator;
 import org.example.r5a12.controller.Lagrange;
 import org.example.r5a12.model.Point;
 
+import javax.imageio.ImageIO;
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -53,6 +57,15 @@ public class PageAffichage extends Application {
         vboxPrincipale.setSpacing(10);
         Scene scene = new Scene(vboxPrincipale, 500, 400);
         stage.setTitle("Graph"); //voir pour modifier le nom de la page avec des paramètres
+
+        sc.applyCss();
+        WritableImage wi = sc.snapshot(new SnapshotParameters(), new WritableImage(800, 600));
+        File file = new File("CanvasImage.png");
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(wi, null), "png", file);
+        } catch (Exception s) {
+        }
+
         stage.setScene(scene);
         stage.show();
     }
