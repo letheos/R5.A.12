@@ -3,7 +3,6 @@ package org.example.r5a12.model;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
 
 
 public class TrouveFile {
@@ -57,18 +55,4 @@ public class TrouveFile {
         return points;
     }
 
-    public static void main(String[] args) {
-        String jsonFilePath = "C:/document/but3/R5.A.12/R5.A.12/src/main/resources/org/example/r5a12/ExemplePoints.json"; // Update with your JSON file path
-        String textFilePath = "C:/Users/roberto/Desktop/point.txt"; // Update with your text file path
-
-        // Read JSON file
-        List<Point> jsonPoints = readJsonFile(jsonFilePath);
-        System.out.println("Points from JSON file:");
-        jsonPoints.forEach(System.out::println);
-
-        // Read Text file
-        List<Point> textPoints = readTextFile(textFilePath);
-        System.out.println("\nPoints from Text file:");
-        textPoints.forEach(System.out::println);
-    }
 }
