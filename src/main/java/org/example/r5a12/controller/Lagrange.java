@@ -8,7 +8,7 @@ public class Lagrange {
     public Lagrange() {
     }
 
-    private static float InterpolationLagrangienne(float X, ArrayList<Point> points) {
+    static float InterpolationLagrangienne(float X, ArrayList<Point> points) {
         float result = 0.0f;
         for (int i = 0; i < points.size(); i++) {
             Point p = points.get(i);
