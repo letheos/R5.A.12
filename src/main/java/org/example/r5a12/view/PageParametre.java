@@ -1,6 +1,5 @@
 package org.example.r5a12.view;
 
-import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -8,22 +7,26 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.r5a12.controller.FileChooserJson;
-import org.example.r5a12.model.Generator;
 import org.example.r5a12.model.Point;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.example.r5a12.model.Generator.generatePoints;
+import static org.example.r5a12.model.TrouveFile.readJsonFile;
+import static org.example.r5a12.model.TrouveFile.readTextFile;
 
 public class PageParametre {
     private final Scene scene;
     private Scene nextScene;
 
     public PageParametre(Stage stage) {
+        List<Point> point = new ArrayList<>();
         VBox vBoxPrincipale = new VBox();
         Text titrePage = new Text(10,50,"Paramètre de création");
         titrePage.setFont(new Font(15));
@@ -65,6 +68,8 @@ public class PageParametre {
         nbrPoint.setPromptText("Par défault 5 points");
         typeDroite.getChildren().addAll(genererPoint, nbrPoint);
 
+
+
         HBox minMaxinput = new HBox();
         hBoxType.setSpacing(10);
         TextField minValeur = new TextField();
@@ -81,20 +86,58 @@ public class PageParametre {
         hBoxType.setAlignment(Pos.CENTER);
         hBoxType.setSpacing(3);
 
-        importFichier.setOnAction(e ->{
-            FileChooserJson fileChooserJson = new FileChooserJson();
 
-            // Open the file chooser dialog
-            File selectedFile = fileChooserJson.getFileChooser().showOpenDialog(this.getScene().getWindow());
+        Button generer = new Button("Générer");
+        generer.setDisable(true);
+
+        FileChooserJson fileChooserJson = new FileChooserJson();
+
+        AtomicReference<String> selectedFile = null;
+        importFichier.setOnAction(e -> {
+            String filePath = fileChooserJson.getFileChooser().showOpenDialog(this.getScene().getWindow()).getPath();
+            if(selectedFile != null){
+                selectedFile.set(filePath);
+                generer.setDisable(false);
+            }
+
+
+
 
         });
 
-        Button generer = new Button("Générer");
+
+
+        toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == fichierSource) {
+                generer.setDisable(true);
+                importFichier.setDisable(false);
+                nbrPoint.setDisable(true);
+            } else if (newValue == genererPoint) {
+                generer.setDisable(false);
+                importFichier.setDisable(true);
+                nbrPoint.setDisable(false);
+            }
+        });
+
+
         generer.setOnAction(e -> {
-            List<Point> point = new ArrayList<>();
+            ArrayList<Point> points = new ArrayList<>();
             if (fichierSource.isSelected()) {
-                //bla
+
+                FileChooser.ExtensionFilter filtreJson = new FileChooser.ExtensionFilter("JSON Files", "*.json");
+                if(Objects.equals(fileChooserJson.getFileChooser().getSelectedExtensionFilter(), filtreJson)) {
+                    final ArrayList<Point> bla = (ArrayList<Point>) readJsonFile(selectedFile.get());
+                    System.out.println(bla);
+                } else{
+                    final ArrayList<Point> bla = (ArrayList<Point>) readTextFile(selectedFile.get());
+                    System.out.println(bla);
+                }
+
+
             } else {
+
+
+
                 int nomPoint = 5;
                 int vMin = -10;
                 int vMax = 10;
@@ -110,12 +153,15 @@ public class PageParametre {
                     vMax = Integer.parseInt(nbrPoint.getCharacters().toString());
                 }
 
-                point = generatePoints(vMin, vMax, nomPoint);
+                points = generatePoints(vMin, vMax, nomPoint);
+
             }
             if (nextScene != null) {
                 stage.setScene(nextScene);
             }
-        });
+        }
+
+        );
         vBoxPrincipale.getChildren().add(generer);
 
         vBoxPrincipale.setSpacing(10);

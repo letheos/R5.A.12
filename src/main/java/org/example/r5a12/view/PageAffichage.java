@@ -1,6 +1,5 @@
 package org.example.r5a12.view;
 
-import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
@@ -10,8 +9,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.example.r5a12.model.Generator;
-import org.example.r5a12.controller.Lagrange;
 import org.example.r5a12.model.Point;
 
 import java.util.ArrayList;
