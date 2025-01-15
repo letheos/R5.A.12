@@ -12,7 +12,6 @@ public class GestionPage extends Application {
 
         pageParametre.setNextScene(pageAffichage.getScene());
         pageAffichage.setPreviousScene(pageParametre.getScene());
-
         stage.setScene(pageParametre.getScene());
         stage.setTitle("Application");
         stage.show();
