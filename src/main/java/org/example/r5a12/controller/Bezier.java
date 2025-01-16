@@ -29,13 +29,13 @@ public class Bezier {
         ArrayList<Point> res = new ArrayList<>();
         Point p0 = points.getFirst();
         Point p1 = points.get(round(points.size()/3));
-        Point p2 = points.get(round(points.size()/-3));
+        Point p2 = points.get(round(points.size()/3)*2);
         Point p3 = points.get(-1);
-        float t = 0.20f;
+        float t = 0.10f;
 
         while (t <= 1f) {
             res.add(bezierCubique(p0, p1, p2, p3, t));
-            t+=0.20f;
+            t+=0.10f;
         }
 
         return res;
