@@ -9,7 +9,7 @@ import java.util.List;
 
 
 import static org.example.r5a12.controller.Lagrange.InterpolationLagrangienne;
-import static org.example.r5a12.controller.Lagrange.getInterpolation;
+
 
 public class Hermite {
     public static List<Point> lesPoints;
