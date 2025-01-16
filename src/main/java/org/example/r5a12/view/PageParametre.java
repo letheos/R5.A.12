@@ -185,8 +185,26 @@ public class PageParametre {
 
 
     private LineChart<Number, Number> createGraphWithCurve(List<Point> points, String title) {
-        final NumberAxis xAxis = new NumberAxis(-10, 10, 1);
-        final NumberAxis yAxis = new NumberAxis(-10, 10, 1);
+        double minx = points.get(0).getX();
+        double maxx = points.get(0).getX();
+        double miny = points.get(0).getY();
+        double maxy = points.get(0).getY();
+        for (int x = 0; x < points.size(); x++) {
+            if(points.get(x).getX() < minx){
+                minx = points.get(x).getX();
+            }
+            if(points.get(x).getX() > maxx){
+                maxx = points.get(x).getX();
+            }
+            if(points.get(x).getY() < miny){
+                miny = points.get(x).getY();
+            }
+            if(points.get(x).getY() > maxy){
+                maxy = points.get(x).getY();
+            }
+        }
+        final NumberAxis xAxis = new NumberAxis(minx, maxx, 1);
+        final NumberAxis yAxis = new NumberAxis(miny, maxy, 1);
         final LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle(title);
         lineChart.setCreateSymbols(true); // Affiche les points
