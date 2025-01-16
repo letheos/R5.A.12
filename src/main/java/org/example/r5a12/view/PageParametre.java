@@ -2,6 +2,10 @@ package org.example.r5a12.view;
 
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -10,6 +14,8 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.r5a12.controller.FileChooserJson;
+import org.example.r5a12.controller.Hermite;
+import org.example.r5a12.controller.Lagrange;
 import org.example.r5a12.model.Point;
 
 import java.util.ArrayList;
@@ -54,15 +60,15 @@ public class PageParametre {
 
         VBox typeGauche = new VBox();
         RadioButton fichierSource = new RadioButton(" Fichier source\n format supporté: JSON");
+        fichierSource.setSelected(true);
         fichierSource.setToggleGroup(toggleGroup);
         Button importFichier = new Button("Importer fichier");
         typeGauche.getChildren().addAll(fichierSource,importFichier);
 
-
         VBox typeDroite = new VBox();
         typeDroite.setSpacing(10);
         RadioButton genererPoint = new RadioButton("Générer points aléatoires");
-        genererPoint.setSelected(true);
+        genererPoint.setSelected(false);
         genererPoint.setToggleGroup(toggleGroup);
         TextField nbrPoint = new TextField();
         nbrPoint.setPromptText("Par défault 5 points");
@@ -85,8 +91,6 @@ public class PageParametre {
         vBoxPrincipale.getChildren().add(hBoxType);
         hBoxType.setAlignment(Pos.CENTER);
         hBoxType.setSpacing(3);
-
-
         Button generer = new Button("Générer");
         generer.setDisable(true);
 
@@ -99,13 +103,7 @@ public class PageParametre {
                 selectedFile.set(filePath);
                 generer.setDisable(false);
             }
-
-
-
-
         });
-
-
 
         toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == fichierSource) {
@@ -123,45 +121,54 @@ public class PageParametre {
         generer.setOnAction(e -> {
             ArrayList<Point> points = new ArrayList<>();
             if (fichierSource.isSelected()) {
-
                 FileChooser.ExtensionFilter filtreJson = new FileChooser.ExtensionFilter("JSON Files", "*.json");
-                if(Objects.equals(fileChooserJson.getFileChooser().getSelectedExtensionFilter(), filtreJson)) {
-                    final ArrayList<Point> bla = (ArrayList<Point>) readJsonFile(selectedFile.get());
-                    System.out.println(bla);
-                } else{
-                    final ArrayList<Point> bla = (ArrayList<Point>) readTextFile(selectedFile.get());
-                    System.out.println(bla);
+                if (Objects.equals(fileChooserJson.getFileChooser().getSelectedExtensionFilter(), filtreJson)) {
+                    points = (ArrayList<Point>) readJsonFile(selectedFile.get());
+                } else {
+                    points = (ArrayList<Point>) readTextFile(selectedFile.get());
                 }
-
-
             } else {
-
-
-
                 int nomPoint = 5;
                 int vMin = -10;
                 int vMax = 10;
-                if (!nbrPoint.getCharacters().isEmpty()) { //un truc dans le edti text
-                    nomPoint = Integer.parseInt(nbrPoint.getCharacters().toString());
+                if (!nbrPoint.getText().isEmpty()) {
+                    nomPoint = Integer.parseInt(nbrPoint.getText());
                 }
-
-                if (!minValeur.getCharacters().isEmpty()) {
-                    vMin = Integer.parseInt(nbrPoint.getCharacters().toString());
+                if (!minValeur.getText().isEmpty()) {
+                    vMin = Integer.parseInt(minValeur.getText());
                 }
-
-                if (!maxValeur.getCharacters().isEmpty()) {
-                    vMax = Integer.parseInt(nbrPoint.getCharacters().toString());
+                if (!maxValeur.getText().isEmpty()) {
+                    vMax = Integer.parseInt(maxValeur.getText());
                 }
-
                 points = generatePoints(vMin, vMax, nomPoint);
-
             }
-            if (nextScene != null) {
-                stage.setScene(nextScene);
-            }
-        }
 
-        );
+            // Création de la page d'affichage avec plusieurs graphiques
+            VBox graphContainer = new VBox(10);
+            graphContainer.setAlignment(Pos.CENTER);
+
+            if (rbLagrangienne.isSelected()) {
+                graphContainer.getChildren().add(createGraphWithCurve(Lagrange.getInterpolation(points,1), "Interpolation Lagrangienne"));
+            }
+            if (rbHermite.isSelected()) {
+                graphContainer.getChildren().add(createGraphWithCurve((Hermite.interpolatePoints(points)), "Interpolation Hermite"));
+            }
+            if (rbBezier.isSelected()) {
+                graphContainer.getChildren().add(createGraphWithCurve(points, "Interpolation Bézier"));
+            }
+            if (rbLineaire.isSelected()) {
+                graphContainer.getChildren().add(createGraphWithCurve(points, "Interpolation Linéaire"));
+            }
+
+            // Création de la scène avec tous les graphiques
+            ScrollPane scrollPane = new ScrollPane(graphContainer);
+            scrollPane.setFitToWidth(true);
+            Scene graphScene = new Scene(scrollPane, 800, 600);
+
+            stage.setScene(graphScene);
+        });
+
+
         vBoxPrincipale.getChildren().add(generer);
 
         vBoxPrincipale.setSpacing(10);
@@ -175,6 +182,26 @@ public class PageParametre {
     public void setNextScene(Scene nextScene) {
         this.nextScene = nextScene;
     }
+
+
+    private LineChart<Number, Number> createGraphWithCurve(List<Point> points, String title) {
+        final NumberAxis xAxis = new NumberAxis(-10, 10, 1);
+        final NumberAxis yAxis = new NumberAxis(-10, 10, 1);
+        final LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle(title);
+        lineChart.setCreateSymbols(true); // Affiche les points
+
+
+
+        XYChart.Series<Number, Number> seriesCurve = new XYChart.Series<>();
+        for (Point point : points) {
+            seriesCurve.getData().add(new XYChart.Data<>(point.getX(), point.getY()));
+        }
+
+        lineChart.getData().add(seriesCurve);
+        return lineChart;
+    }
+
 
 
 }

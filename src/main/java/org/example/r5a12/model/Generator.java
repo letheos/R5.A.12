@@ -10,6 +10,8 @@ public class Generator {
     public static ArrayList<Point> generatePoints(int lowlimit, int highlimit,int nbpoints) {
         ArrayList<Point> points= new ArrayList<>();
         Random random = new Random();
+        System.out.println(highlimit);
+        System.out.println(lowlimit);
         for(int i=0; i<nbpoints; i++){
             Point p = new Point(random.nextFloat(lowlimit,highlimit),random.nextFloat(lowlimit,highlimit));
             points.add(p);
