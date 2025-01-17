@@ -40,7 +40,7 @@ public class PageParametre {
     public PageParametre(Stage stage) {
         List<Point> point = new ArrayList<>();
         VBox vBoxPrincipale = new VBox();
-        Text titrePage = new Text(10,50,"Paramètre de création");
+        Text titrePage = new Text(10, 50, "Paramètre de création");
         titrePage.setFont(new Font(15));
         vBoxPrincipale.getChildren().add(titrePage);
 
@@ -179,10 +179,15 @@ public class PageParametre {
 
             graphContainer.getChildren().add(saveButton);
 
-            // Mise à jour de la scène principale
+            // Création de la scène des graphiques
             Scene graphScene = new Scene(graphContainer, 800, 600);
-            stage.setScene(graphScene);
-            stage.setTitle("Graphiques");
+            Stage graphStage = new Stage();
+            graphStage.setScene(graphScene);
+            graphStage.setTitle("Graphiques");
+            graphStage.show();  // Afficher la scène des graphiques
+
+            // Ne pas fermer la scène principale
+            stage.setTitle("Paramètres de création");
         });
 
         vBoxPrincipale.getChildren().add(generer);
@@ -200,13 +205,12 @@ public class PageParametre {
     }
 
     public LineChart<Number, Number> createGraphWithCurve(List<Point> points, String title) {
-        // Trier les points par leur distance à l'origine (0,0)
+        // Créer un graphique avec les courbes
         points.sort((p1, p2) -> Double.compare(
                 Math.sqrt(p1.getX() * p1.getX() + p1.getY() * p1.getY()),
                 Math.sqrt(p2.getX() * p2.getX() + p2.getY() * p2.getY())
         ));
 
-        // Trouver les min/max pour les axes
         double minx = points.get(0).getX();
         double maxx = points.get(0).getX();
         double miny = points.get(0).getY();
@@ -226,42 +230,35 @@ public class PageParametre {
             }
         }
 
-        // Définir les axes avec des marges symétriques autour de l'origine
         final NumberAxis xAxis = new NumberAxis(-Math.abs(maxx), Math.abs(maxx), 1);
         final NumberAxis yAxis = new NumberAxis(-Math.abs(maxy), Math.abs(maxy), 1);
 
-        // Créer le graphique
         final LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle(title);
         lineChart.setCreateSymbols(true);
 
-        // Ajouter les points triés
         XYChart.Series<Number, Number> seriesCurve = new XYChart.Series<>();
         for (Point point : points) {
             seriesCurve.getData().add(new XYChart.Data<>(point.getX(), point.getY()));
         }
 
         lineChart.getData().add(seriesCurve);
-
         return lineChart;
     }
 
     private LineChart<Number, Number> createLinearGraph(List<Point> points, String title) {
-        // Déterminer les valeurs maximales et minimales pour l'axe X et Y
+        // Créer un graphique linéaire
         double minX = points.stream().mapToDouble(Point::getX).min().orElse(0);
         double maxX = points.stream().mapToDouble(Point::getX).max().orElse(1);
         double minY = points.stream().mapToDouble(Point::getY).min().orElse(0);
         double maxY = points.stream().mapToDouble(Point::getY).max().orElse(1);
 
-        // Créer les axes X et Y
         NumberAxis xAxis = new NumberAxis(minX, maxX, (maxX - minX) / 5);
         NumberAxis yAxis = new NumberAxis(minY, maxY, (maxY - minY) / 5);
 
-        // Créer le graphique
         LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle(title);
 
-        // Ajouter les points comme une série de données
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         for (Point point : points) {
             series.getData().add(new XYChart.Data<>(point.getX(), point.getY()));
