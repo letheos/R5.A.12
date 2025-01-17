@@ -28,8 +28,8 @@ public class Bezier {
     public static ArrayList<Point> getInterpolation(ArrayList<Point> points) {
         ArrayList<Point> res = new ArrayList<>();
         Point p0 = points.getFirst();
-        Point p1 = points.get(round(points.size()/3));
-        Point p2 = points.get(round(points.size()/3)*2);
+        Point p1 = points.get(points.size()/3);
+        Point p2 = points.get((int) (points.size()/1.5f));
         Point p3 = points.get(-1);
         float t = 0.10f;
 

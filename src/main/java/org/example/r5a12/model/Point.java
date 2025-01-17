@@ -1,6 +1,7 @@
 package org.example.r5a12.model;
 
 import org.example.r5a12.controller.Lagrange;
+import org.example.r5a12.view.rekop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,27 @@ public class Point {
             }
         }
         return prime;
+    }
+
+    public static List<Point> Interpolate(List<Point> points) {
+        List<Point> result = new ArrayList<>();
+        for (int i = 0; i < points.size() - 1; i++) {
+            Point p1 = points.get(i);
+            Point p2 = points.get(i + 1);
+
+
+            result.add(p1);
+
+            double stepSize = (p2.x - p1.x) ;
+            for (int j = 1; j < 1; j++) {
+                double x = p1.x + j * stepSize;
+                double y = p1.y + (p2.y - p1.y) / (p2.x - p1.x) * (x - p1.x);
+                result.add(new Point((float)x,(float)y));
+            }
+        }
+        result.add(points.get(points.size() - 1));
+
+        return result;
     }
 
 }
