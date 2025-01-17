@@ -9,7 +9,7 @@ public class GestionPage extends Application {
 
         PageParametre pageParametre = new PageParametre(stage);
         /*PageAffichage pageAffichage = new PageAffichage(stage,null);
-
+z
         pageParametre.setNextScene(pageAffichage.getScene());
         pageAffichage.setPreviousScene(pageParametre.getScene());*/
         stage.setScene(pageParametre.getScene());
