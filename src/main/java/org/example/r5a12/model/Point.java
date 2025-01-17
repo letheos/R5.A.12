@@ -1,7 +1,6 @@
 package org.example.r5a12.model;
 
 import org.example.r5a12.controller.Lagrange;
-import org.example.r5a12.view.rekop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +45,6 @@ public class Point {
         for (int i = 0; i < points.size() - 1; i++) {
             Point p1 = points.get(i);
             Point p2 = points.get(i + 1);
-
-
             result.add(p1);
 
             double stepSize = (p2.x - p1.x) ;

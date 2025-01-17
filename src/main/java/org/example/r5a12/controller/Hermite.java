@@ -39,51 +39,66 @@ public class Hermite {
         return derivatives;
     }
 
-    // Fonction de base Hermite H_i(x)
-    private float H(int i, float x) {
+    // Fonction de base de Lagrange L_i(x)
+    private float L(int i, float x) {
         float result = 1.0f;
         for (int k = 0; k < points.size(); k++) {
             if (k != i) {
                 result *= (x - points.get(k).getX()) / (points.get(i).getX() - points.get(k).getX());
             }
         }
-        return result * result * (1 - 2 * (x - points.get(i).getX()) * derivativeLagrange(i));
+        return result;
     }
 
-    // Dérivée de la fonction de Lagrange pour H_i'(x)
-    private float derivativeLagrange(int i) {
+    // Dérivée de Lagrange L'_i(x_i)
+    private float LDerivative(int i) {
         float result = 0.0f;
         for (int k = 0; k < points.size(); k++) {
             if (k != i) {
-                float prod = 1.0f / (points.get(i).getX() - points.get(k).getX());
+                float term = 1.0f / (points.get(i).getX() - points.get(k).getX());
                 for (int j = 0; j < points.size(); j++) {
                     if (j != i && j != k) {
-                        prod *= (points.get(i).getX() - points.get(j).getX());
+                        term *= (points.get(i).getX() - points.get(j).getX());
                     }
                 }
-                result += prod;
+                result += term;
             }
         }
-        return 2 * result;
+        return result;
+    }
+
+    // Fonction de base Hermite H_i(x)
+    private float H(int i, float x) {
+        float li = L(i, x);
+        float liDerivative = LDerivative(i);
+        return (1 - 2 * (x - points.get(i).getX()) * liDerivative) * li * li;
+    }
+
+    // Fonction auxiliaire Hermite K_i(x)
+    private float K(int i, float x) {
+        float li = L(i, x);
+        return (x - points.get(i).getX()) * li * li;
     }
 
     // Fonction interpolée d'Hermite P(x)
     private float interpolate(float x) {
         float result = 0.0f;
         for (int i = 0; i < points.size(); i++) {
-            float h = H(i, x);
-            float hp = derivativeLagrange(i) * (x - points.get(i).getX());
-            result += h * points.get(i).getY() + hp * derivatives.get(i);
+            float hi = H(i, x);
+            float ki = K(i, x);
+            result += hi * points.get(i).getY() + ki * derivatives.get(i);
         }
         return result;
     }
 
-    // Génération des points interpolés (accessible publiquement)
-    public List<Point> getInterpolatedPoints() {
+    // Génération des points interpolés avec un nombre d'étapes personnalisable
+    public List<Point> getInterpolatedPoints(int steps) {
+        if (steps < 2) {
+            throw new IllegalArgumentException("Le nombre de points doit être au moins 2.");
+        }
         List<Point> interpolatedPoints = new ArrayList<>();
         float xMin = points.get(0).getX();
         float xMax = points.get(points.size() - 1).getX();
-        int steps = 100; // Par défaut, 100 points interpolés
         float stepSize = (xMax - xMin) / (steps - 1);
         for (int i = 0; i < steps; i++) {
             float x = xMin + i * stepSize;
@@ -96,6 +111,6 @@ public class Hermite {
     // Méthode statique pour obtenir les points interpolés à partir d'une liste de points d'entrée
     public static List<Point> interpolatePoints(List<Point> points) {
         Hermite hermite = new Hermite(points);
-        return hermite.getInterpolatedPoints();
+        return hermite.getInterpolatedPoints(50);
     }
 }
