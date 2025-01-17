@@ -30,7 +30,7 @@ public class Bezier {
         Point p0 = points.getFirst();
         Point p1 = points.get(points.size()/3);
         Point p2 = points.get((int) (points.size()/1.5f));
-        Point p3 = points.get(-1);
+        Point p3 = points.getLast();
         float t = 0.10f;
 
         while (t <= 1f) {
