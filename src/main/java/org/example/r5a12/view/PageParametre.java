@@ -1,6 +1,8 @@
 package org.example.r5a12.view;
 
 import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -9,12 +11,16 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Polyline;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.example.r5a12.controller.Bezier;
 import org.example.r5a12.controller.FileChooserJson;
 import org.example.r5a12.controller.Hermite;
+
 import org.example.r5a12.controller.Lagrange;
 import org.example.r5a12.model.Point;
 
@@ -143,30 +149,32 @@ public class PageParametre {
                 points = generatePoints(vMin, vMax, nomPoint);
             }
 
-            // Création de la page d'affichage avec plusieurs graphiques
-            VBox graphContainer = new VBox(10);
-            graphContainer.setAlignment(Pos.CENTER);
+            // Création d'une nouvelle fenêtre pour afficher les graphiques
+            Stage affichageStage = new Stage();
+            PageAffichage pageAffichage = new PageAffichage(affichageStage, points);
 
+            // Ajout des graphiques sélectionnés
+            VBox graphContainer = new VBox(10);
             if (rbLagrangienne.isSelected()) {
-                graphContainer.getChildren().add(createGraphWithCurve(Lagrange.getInterpolation(points,1), "Interpolation Lagrangienne"));
+                graphContainer.getChildren().add(createGraphWithCurve(Lagrange.getInterpolation(points, 1), "Interpolation Lagrangienne"));
             }
             if (rbHermite.isSelected()) {
-                graphContainer.getChildren().add(createGraphWithCurve((Hermite.interpolatePoints(points)), "Interpolation Hermite"));
+                graphContainer.getChildren().add(createGraphWithCurve(Hermite.interpolatePoints(points), "Interpolation Hermite"));
             }
             if (rbBezier.isSelected()) {
-                graphContainer.getChildren().add(createGraphWithCurve(points, "Interpolation Bézier"));
+                graphContainer.getChildren().add(createGraphWithCurve(Bezier.getInterpolation(points), "Interpolation Bézier"));
             }
             if (rbLineaire.isSelected()) {
-                graphContainer.getChildren().add(createGraphWithCurve(points, "Interpolation Linéaire"));
+                graphContainer.getChildren().add(createLinearGraph(points, "Interpolation Linéaire"));
             }
 
-            // Création de la scène avec tous les graphiques
-            ScrollPane scrollPane = new ScrollPane(graphContainer);
-            scrollPane.setFitToWidth(true);
-            Scene graphScene = new Scene(scrollPane, 800, 600);
-
-            stage.setScene(graphScene);
+            // Ajout des graphiques à la scène d'affichage
+            pageAffichage.getScene().setRoot(graphContainer);
+            affichageStage.setScene(pageAffichage.getScene());
+            affichageStage.setTitle("Page d'Affichage");
+            affichageStage.show();
         });
+
 
 
         vBoxPrincipale.getChildren().add(generer);
@@ -203,12 +211,11 @@ public class PageParametre {
                 maxy = points.get(x).getY();
             }
         }
-        final NumberAxis xAxis = new NumberAxis(minx, maxx, 1);
-        final NumberAxis yAxis = new NumberAxis(miny, maxy, 1);
+        final NumberAxis xAxis = new NumberAxis(-maxx, maxx, 1);
+        final NumberAxis yAxis = new NumberAxis(-maxy, maxy, 1);
         final LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle(title);
-        lineChart.setCreateSymbols(true); // Affiche les points
-
+        lineChart.setCreateSymbols(true);
 
 
         XYChart.Series<Number, Number> seriesCurve = new XYChart.Series<>();
@@ -217,6 +224,40 @@ public class PageParametre {
         }
 
         lineChart.getData().add(seriesCurve);
+        return lineChart;
+    }
+
+    private LineChart<Number, Number> createLinearGraph(List<Point> points, String title) {
+        // Déterminer les valeurs maximales et minimales des points
+        double minx = points.stream().mapToDouble(Point::getX).min().orElse(0);
+        double maxx = points.stream().mapToDouble(Point::getX).max().orElse(10);
+        double miny = points.stream().mapToDouble(Point::getY).min().orElse(0);
+        double maxy = points.stream().mapToDouble(Point::getY).max().orElse(10);
+
+        // Calculer la plage maximale pour chaque axe pour qu'ils soient centrés autour de 0
+        double maxAbsX = Math.max(Math.abs(minx), Math.abs(maxx));
+        double maxAbsY = Math.max(Math.abs(miny), Math.abs(maxy));
+
+        // Créer des axes centrés sur 0
+        final NumberAxis xAxis = new NumberAxis(-maxAbsX, maxAbsX, maxAbsX / 5);
+        final NumberAxis yAxis = new NumberAxis(-maxAbsY, maxAbsY, maxAbsY / 5);
+        xAxis.setLabel("X");
+        yAxis.setLabel("Y");
+
+        // Créer le LineChart
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.setTitle(title);
+        lineChart.setCreateSymbols(true);
+
+        // Ajouter les données au graphique
+        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+        series.setName("Interpolation Linéaire");
+
+        for (Point p : points) {
+            series.getData().add(new XYChart.Data<>(p.getX(), p.getY()));
+        }
+
+        lineChart.getData().add(series);
         return lineChart;
     }
 
